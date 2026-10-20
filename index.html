@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes"><title>Pod Points 🍂</title>
+<meta name="apple-mobile-web-app-capable" content="yes"><title>Pod Points 🚀</title>
 <style>
-:root{--ink:#3D2C29;--cream:#FFF8F0;--pump:#E07A3F;--leaf:#5B7C6A;--gold:#E8A838}
+:root{--ink:#3D2C29;--cream:#FFF8F0;--pump:#7B5CFF;--leaf:#2E3A7A;--gold:#F5B83D}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:"Nunito","Avenir Next",system-ui,sans-serif;background:var(--cream) radial-gradient(circle at 10% 0,#FFE8D6 0,transparent 40%);color:var(--ink)}
+body{margin:0;font-family:"Nunito","Avenir Next",system-ui,sans-serif;background:#141B3D radial-gradient(1px 1px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 120px 80px,#fff,transparent),radial-gradient(2px 2px at 220px 150px,#cfd8ff,transparent);background-size:260px 200px;color:var(--ink)}
 header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 18px;background:#fff;border-bottom:4px solid var(--pump);position:sticky;top:0;z-index:5}
 h1{margin:0 12px 0 0;font-size:28px}
 button{font:inherit;border:0;border-radius:16px;cursor:pointer;min-height:52px;padding:8px 16px;font-weight:800;font-size:18px}
@@ -32,7 +32,7 @@ input,select{font:inherit;font-size:18px;padding:10px;border-radius:12px;border:
 #toast.show{opacity:1}
 .small{font-size:14px;opacity:.8}
 </style></head><body>
-<header><h1>🍂 Pod Points</h1><span id="blocks"></span>
+<header><h1>🚀 Pod Points</h1><span id="blocks"></span>
 <button class="tool" onclick="undo()">↶ Undo</button>
 <button class="tool" onclick="openRewards()">🎁 Rewards</button>
 <button class="tool" onclick="weekly()">🌅 New Week</button>
@@ -42,9 +42,9 @@ input,select{font:inherit;font-size:18px;padding:10px;border-radius:12px;border:
 <dialog id="dlg"></dialog><div id="toast"></div>
 <script>
 const ROSTER={"1": {"label": "B1 \u00b7 Plett", "pods": [{"name": "Pod 1", "kids": ["Pod 1 Seat 1", "Pod 1 Seat 2", "Pod 1 Seat 3", "Pod 1 Seat 4"]}, {"name": "Pod 2", "kids": ["Pod 2 Seat 1", "Pod 2 Seat 2", "Pod 2 Seat 3", "Pod 2 Seat 4"]}, {"name": "Pod 3", "kids": ["Pod 3 Seat 1", "Pod 3 Seat 2", "Pod 3 Seat 3", "Pod 3 Seat 4"]}, {"name": "Pod 4", "kids": ["Pod 4 Seat 1", "Pod 4 Seat 2", "Pod 4 Seat 3", "Pod 4 Seat 4"]}, {"name": "Pod 5", "kids": ["Pod 5 Seat 1", "Pod 5 Seat 2", "Pod 5 Seat 3", "Pod 5 Seat 4"]}, {"name": "Pod 6", "kids": ["Pod 6 Seat 1", "Pod 6 Seat 2", "Pod 6 Seat 3", "Pod 6 Seat 4"]}, {"name": "Pod 7", "kids": ["Pod 7 Seat 1", "Pod 7 Seat 2", "Pod 7 Seat 3", "Pod 7 Seat 4"]}, {"name": "Star Desk", "kids": ["Star Desk Seat 1"]}]}, "2": {"label": "B2 \u00b7 Sedinger", "pods": [{"name": "Pod 1", "kids": ["Pod 1 Seat 1", "Pod 1 Seat 2", "Pod 1 Seat 3", "Pod 1 Seat 4"]}, {"name": "Pod 2", "kids": ["Pod 2 Seat 1", "Pod 2 Seat 2", "Pod 2 Seat 3"]}, {"name": "Pod 3", "kids": ["Pod 3 Seat 1", "Pod 3 Seat 2", "Pod 3 Seat 3", "Pod 3 Seat 4"]}, {"name": "Pod 4", "kids": ["Pod 4 Seat 1", "Pod 4 Seat 2", "Pod 4 Seat 3", "Pod 4 Seat 4"]}, {"name": "Pod 5", "kids": ["Pod 5 Seat 1", "Pod 5 Seat 2", "Pod 5 Seat 3", "Pod 5 Seat 4"]}, {"name": "Pod 6", "kids": ["Pod 6 Seat 1", "Pod 6 Seat 2", "Pod 6 Seat 3", "Pod 6 Seat 4"]}, {"name": "Pod 7", "kids": ["Pod 7 Seat 1", "Pod 7 Seat 2", "Pod 7 Seat 3"]}, {"name": "Pod 8", "kids": ["Pod 8 Seat 1", "Pod 8 Seat 2", "Pod 8 Seat 3"]}]}, "3": {"label": "B3 \u00b7 Nelson", "pods": [{"name": "Pod 1", "kids": ["Pod 1 Seat 1", "Pod 1 Seat 2", "Pod 1 Seat 3", "Pod 1 Seat 4"]}, {"name": "Pod 2", "kids": ["Pod 2 Seat 1", "Pod 2 Seat 2", "Pod 2 Seat 3", "Pod 2 Seat 4"]}, {"name": "Pod 3", "kids": ["Pod 3 Seat 1", "Pod 3 Seat 2", "Pod 3 Seat 3", "Pod 3 Seat 4"]}, {"name": "Pod 4", "kids": ["Pod 4 Seat 1", "Pod 4 Seat 2", "Pod 4 Seat 3", "Pod 4 Seat 4"]}, {"name": "Pod 5", "kids": ["Pod 5 Seat 1", "Pod 5 Seat 2", "Pod 5 Seat 3", "Pod 5 Seat 4"]}, {"name": "Pod 6", "kids": ["Pod 6 Seat 1", "Pod 6 Seat 2", "Pod 6 Seat 3", "Pod 6 Seat 4"]}, {"name": "Pod 7", "kids": ["Pod 7 Seat 1", "Pod 7 Seat 2", "Pod 7 Seat 3", "Pod 7 Seat 4"]}, {"name": "Pod 8", "kids": ["Pod 8 Seat 1", "Pod 8 Seat 2", "Pod 8 Seat 3"]}]}, "4": {"label": "B4 \u00b7 Stonebraker", "pods": [{"name": "Pod 1", "kids": ["Pod 1 Seat 1", "Pod 1 Seat 2", "Pod 1 Seat 3", "Pod 1 Seat 4"]}, {"name": "Pod 2", "kids": ["Pod 2 Seat 1", "Pod 2 Seat 2", "Pod 2 Seat 3", "Pod 2 Seat 4"]}, {"name": "Pod 3", "kids": ["Pod 3 Seat 1", "Pod 3 Seat 2", "Pod 3 Seat 3", "Pod 3 Seat 4"]}, {"name": "Pod 4", "kids": ["Pod 4 Seat 1", "Pod 4 Seat 2", "Pod 4 Seat 3", "Pod 4 Seat 4"]}, {"name": "Pod 5", "kids": ["Pod 5 Seat 1", "Pod 5 Seat 2", "Pod 5 Seat 3", "Pod 5 Seat 4"]}, {"name": "Pod 6", "kids": ["Pod 6 Seat 1", "Pod 6 Seat 2", "Pod 6 Seat 3", "Pod 6 Seat 4"]}, {"name": "Pod 7", "kids": ["Pod 7 Seat 1", "Pod 7 Seat 2", "Pod 7 Seat 3", "Pod 7 Seat 4"]}, {"name": "Pod 8", "kids": ["Pod 8 Seat 1", "Pod 8 Seat 2", "Pod 8 Seat 3", "Pod 8 Seat 4"]}]}};
-const COLORS=["#FDE2E4","#E2ECE9","#FFF1D6","#E8DFF5","#DCEEF8","#FFE8D6","#E4F0D9","#F7F2EC","#FFF1D6"];
-const CUTE=["🎃 Pumpkin Patch","🌟 Star Seekers","🦉 Moon Owls","🍁 Maple Leaves","🚀 Rocket Raccoons","🦊 Fox Trotters","🌙 Comet Cubs","🐿️ Acorn Squad","🪐 Planet Pals"];
-const pname=i=>(S.names&&S.names[key(i)])||CUTE[i%9];
+const COLORS=["#E3E8FF","#F1E4FF","#DFF6FF","#FFE9F3","#E6FFF4","#FFF6D9","#E8ECF7","#FDE7DA","#EAF7FF","#F3EDFF"];const _old=["#FDE2E4","#E2ECE9","#FFF1D6","#E8DFF5","#DCEEF8","#FFE8D6","#E4F0D9","#F7F2EC","#FFF1D6"];
+const CUTE=["🌙 Moon Crew","🪐 Saturn Rings","☄️ Comet Chasers","🌌 Galaxy Guardians","🚀 Rocket Squad","⭐ North Stars","🔭 Star Gazers","☀️ Solar Flares","🌍 Orbit Crew","👽 Nebula Ninjas"];
+const pname=i=>(S.names&&S.names[key(i)])||CUTE[i%10];
 const EMO=["🍎","🍁","🎃","🌻","🦉","🍄","🌰","🦊","⭐"];
 const REASONS=["🤝 Teamwork","🎯 On task","💬 Kind words","🧹 Clean pod","🙋 Moving & thinking","🧠 Deep thinking"];
 const DEF_REWARDS=[["Pod picks music",10],["Sit anywhere 1 day",15],["Teacher's chair 1 period",20],["Pod lunch with Mrs. Plett",30],["Extra recess 5 min",25]];
@@ -68,8 +68,8 @@ function render(){
  const B=ROSTER[S.block];
  document.getElementById("blocks").innerHTML=Object.keys(ROSTER).map(b=>`<button class="blk ${b==S.block?'on':''}" onclick="S.block='${b}';save();render()">${ROSTER[b].label}</button>`).join(" ");
  const tot=B.pods.reduce((a,p,i)=>a+(S.pts[key(i)]||0),0),goal=S.classGoal*B.pods.length;
- document.getElementById("goal").innerHTML=`🎯 Class goal: ${tot} / ${goal} <div class="bar"><i style="width:${Math.min(100,tot/goal*100)}%"></i></div>`;
- document.getElementById("pods").innerHTML=B.pods.map((p,i)=>{const k=key(i);return `<section class="pod" style="background:${COLORS[i%9]}">
+ document.getElementById("goal").innerHTML=`🌠 Mission goal: ${tot} / ${goal} <div class="bar"><i style="width:${Math.min(100,tot/goal*100)}%"></i></div>`;
+ document.getElementById("pods").innerHTML=B.pods.map((p,i)=>{const k=key(i);return `<section class="pod" style="background:${COLORS[i%10]}">
  <div class="top"><h2>${pname(i)} <span class="small">· ${p.name}</span></h2><div class="pts">${S.pts[k]||0}</div></div>
  <div class="kids">🪑 ${p.kids.length} seats</div>
  <div class="rs">${REASONS.map(r=>`<button onclick="add(${i},'${r}')">+ ${r}</button>`).join("")}</div>
