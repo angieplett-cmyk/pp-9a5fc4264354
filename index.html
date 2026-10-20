@@ -29,6 +29,7 @@ input,select{font:inherit;font-size:18px;padding:10px;border-radius:12px;border:
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:14px 24px;border-radius:20px;font-size:20px;font-weight:800;opacity:0;transition:.3s;pointer-events:none}
 #toast.show{opacity:1}
 .small{font-size:14px;opacity:.8}
+.pn-tap{cursor:pointer}.ng{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.ng button{background:#EEF0FF;font-size:16px;min-height:60px}.ng button.taken{opacity:.35}.ng button.sel{background:#7B5CFF;color:#fff}.eg button{background:#F3EDFF;font-size:28px;min-width:56px}.eg button.sel{outline:3px solid #7B5CFF}
 </style></head><body>
 <header><h1>🚀 Pod Points</h1><span id="blocks"></span>
 <button class="tool" onclick="undo()">↶ Undo</button>
@@ -62,7 +63,7 @@ function render(){
  const tot=B.pods.reduce((a,p,i)=>a+(S.pts[key(i)]||0),0),goal=S.classGoal*B.pods.length;
  document.getElementById("goal").innerHTML=`🌠 Mission goal: ${tot} / ${goal} <div class="bar"><i style="width:${Math.min(100,tot/goal*100)}%"></i></div>`;
  document.getElementById("pods").innerHTML=B.pods.map((p,i)=>{const k=key(i);return `<section class="pod" style="background:${COLORS[i%10]}">
- <div class="top"><h2>${pname(i)} <span class="small">· ${p.name}</span></h2><div class="pts">${S.pts[k]||0}</div></div>
+ <div class="top"><h2 class="pn-tap" onclick="nameSheet(${i})">${pname(i)} ${S.lock?"🔒":"✏️"} <span class="small">· ${p.name}</span></h2><div class="pts">${S.pts[k]||0}</div></div>
  <div class="kids">🪑 ${p.kids.length} seats</div>
  <div class="rs">${REASONS.map(r=>`<button onclick="add(${i},'${r}')">+ ${r}</button>`).join("")}</div></section>`}).join("");
 }
@@ -75,8 +76,28 @@ function buy(j){const i=+document.getElementById("rp"+j).value,k=key(i),c=S.rewa
 function openTeacher(){const d=document.getElementById("dlg"),B=ROSTER[S.block];const kids=B.pods.flatMap(p=>p.kids);
 
  d.innerHTML=`<h2>🔒 Teacher only</h2><p class="small">Private check-in log. Never changes pod points (Pod Points is points-only) and never shows on the main screen. Use it for a quiet talk with the student, not a public consequence.</p>
-<h3>Pod names</h3>${B.pods.map((p,i)=>`<div class="rw"><span>${p.name}</span><input class="pn" value="${pname(i)}" onchange="S.names=S.names||{};S.names[key(${i})]=this.value;save();render()"></div>`).join("")}<h3>Private check-ins</h3>${kids.map(n=>{const c=S.strikes[S.block+":"+n]||0;return `<div class="rw"><span>${n}</span><span>${"●".repeat(c)||"—"}</span><span><button onclick="st('${n.replace(/'/g,"\\'")}',1)">+ note</button> <button onclick="st('${n.replace(/'/g,"\\'")}',-1)">−</button></span></div>`}).join("")}
+<p><label style="font-size:20px;font-weight:800"><input type="checkbox" id="lockT" ${S.lock?"checked":""} onchange="S.lock=this.checked;save();render()" style="width:28px;height:28px"> 🔒 Lock names (no changes mid-lesson)</label></p><h3>Pod names (teacher edit)</h3>${B.pods.map((p,i)=>`<div class="rw"><span>${p.name}</span><input class="pn" value="${pname(i)}" onchange="S.names=S.names||{};S.names[key(${i})]=this.value;save();render()"></div>`).join("")}<h3>Private check-ins</h3>${kids.map(n=>{const c=S.strikes[S.block+":"+n]||0;return `<div class="rw"><span>${n}</span><span>${"●".repeat(c)||"—"}</span><span><button onclick="st('${n.replace(/'/g,"\\'")}',1)">+ note</button> <button onclick="st('${n.replace(/'/g,"\\'")}',-1)">−</button></span></div>`}).join("")}
  <p><button onclick="if(confirm('Clear private notes for this block?')){Object.keys(S.strikes).filter(k=>k.startsWith(S.block+':')).forEach(k=>delete S.strikes[k]);save();openTeacher()}">Clear notes</button> <button class="tool" onclick="dlg.close()">Close</button></p>`;if(!d.open)d.showModal()}
 function st(n,v){const k=S.block+":"+n;S.strikes[k]=Math.max(0,(S.strikes[k]||0)+v);save();openTeacher()}
+
+const SPACE_NAMES=["Moon Crew","Saturn Rings","Comet Chasers","Galaxy Guardians","Rocket Squad","North Stars","Star Gazers","Solar Flares","Orbit Crew","Nebula Ninjas","Astro Aces","Meteor Masters","Cosmic Crew","Lunar Legends","Mars Rovers","Jupiter Giants","Space Rangers","Star Pilots","Rocket Rebels","Galaxy Gliders","Milky Way Team","Black Hole Bunch","Supernovas","Satellite Squad"];
+const EMOJIS=["🌙","🪐","☄️","🌌","🚀","⭐","🔭","☀️","🌍","👽","🛸","🌠","🛰️","👩‍🚀","🌑","💫"];
+const BAD=["stupid","dumb","idiot","hate","kill","sexy","poop","butt","fart","loser","ugly","shut up","damn","hell","crap","suck"];
+let pick={};
+function taken(i){return ROSTER[S.block].pods.map((p,j)=>j==i?null:pname(j).replace(/^\S+\s/,"").toLowerCase())}
+function nameSheet(i){if(S.lock)return toast("🔒 Names are locked right now");
+ const cur=pname(i);pick={i,emo:cur.split(" ")[0],nm:cur.replace(/^\S+\s/,"")};drawSheet()}
+function drawSheet(){const d=document.getElementById("dlg"),tk=taken(pick.i);
+ d.innerHTML=`<h2>🚀 Name your pod!</h2><p class="small">Pick a name and an emoji. Names can't repeat in this block.</p>
+ <div class="ng">${SPACE_NAMES.map(n=>{const x=tk.includes(n.toLowerCase());return `<button class="${x?'taken':''} ${n==pick.nm?'sel':''}" ${x?'disabled':''} onclick="pick.nm='${n}';drawSheet()">${n}</button>`}).join("")}</div>
+ <div class="eg">${EMOJIS.map(e=>`<button class="${e==pick.emo?'sel':''}" onclick="pick.emo='${e}';drawSheet()">${e}</button>`).join(" ")}</div>
+ <p>Or make your own: <input id="cn" maxlength="20" placeholder="Max 20 letters"> <button class="tool" onclick="useCustom()">Use it</button></p>
+ <p style="font-size:26px;font-weight:900">${pick.emo} ${pick.nm}</p>
+ <button class="tool" onclick="saveName()">✅ Save name</button> <button onclick="dlg.close()">Cancel</button>`;if(!d.open)d.showModal()}
+function useCustom(){const v=document.getElementById("cn").value.trim().replace(/[<>"'`]/g,"").slice(0,20);
+ if(!v)return;const low=v.toLowerCase().replace(/[^a-z ]/g,"");if(BAD.some(b=>low.includes(b)))return toast("Let's pick a kind name 🙂");
+ if(taken(pick.i).includes(v.toLowerCase()))return toast("Another pod has that name");pick.nm=v;drawSheet()}
+function saveName(){if(taken(pick.i).includes(pick.nm.toLowerCase()))return toast("Another pod has that name");
+ S.names=S.names||{};S.names[key(pick.i)]=pick.emo+" "+pick.nm;save();render();dlg.close();toast("🎉 Welcome, "+pick.emo+" "+pick.nm+"!")}
 render();
 </script></body></html>
