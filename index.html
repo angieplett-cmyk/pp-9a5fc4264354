@@ -30,6 +30,7 @@ input,select{font:inherit;font-size:18px;padding:10px;border-radius:12px;border:
 #toast.show{opacity:1}
 .small{font-size:14px;opacity:.8}
 .pn-tap{cursor:pointer}.ng{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.ng button{background:#EEF0FF;font-size:16px;min-height:60px}.ng button.taken{opacity:.35}.ng button.sel{background:#7B5CFF;color:#fff}.eg button{background:#F3EDFF;font-size:28px;min-width:56px}.eg button.sel{outline:3px solid #7B5CFF}
+#pop{position:fixed;inset:0;background:#141B3Dcc;display:none;align-items:center;justify-content:center;z-index:50}#pop.show{display:flex}.pc{background:#fff;border-radius:32px;padding:30px 50px;text-align:center;font-size:44px;font-weight:900;border:6px solid #F5B83D;animation:pp .4s}@keyframes pp{from{transform:scale(.5)}to{transform:scale(1)}}.gg button{background:#FFF6D9;font-size:15px;min-height:56px}.gg button.sel{background:#F5B83D}.gg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 </style></head><body>
 <header><h1>🚀 Pod Points</h1><span id="blocks"></span>
 <button class="tool" onclick="undo()">↶ Undo</button>
@@ -38,7 +39,7 @@ input,select{font:inherit;font-size:18px;padding:10px;border-radius:12px;border:
 <button class="tool" onclick="openTeacher()">🔒 Teacher</button>
 <div id="goal"></div></header>
 <main id="pods"></main>
-<dialog id="dlg"></dialog><div id="toast"></div>
+<dialog id="dlg"></dialog><div id="toast"></div><div id="pop" onclick="this.classList.remove('show')"></div>
 <script>
 const ROSTER={"1": {"label": "B1 \u00b7 Plett", "pods": [{"name": "Pod 1", "kids": ["Pod 1 Seat 1", "Pod 1 Seat 2", "Pod 1 Seat 3", "Pod 1 Seat 4"]}, {"name": "Pod 2", "kids": ["Pod 2 Seat 1", "Pod 2 Seat 2", "Pod 2 Seat 3", "Pod 2 Seat 4"]}, {"name": "Pod 3", "kids": ["Pod 3 Seat 1", "Pod 3 Seat 2", "Pod 3 Seat 3", "Pod 3 Seat 4"]}, {"name": "Pod 4", "kids": ["Pod 4 Seat 1", "Pod 4 Seat 2", "Pod 4 Seat 3", "Pod 4 Seat 4"]}, {"name": "Pod 5", "kids": ["Pod 5 Seat 1", "Pod 5 Seat 2", "Pod 5 Seat 3", "Pod 5 Seat 4"]}, {"name": "Pod 6", "kids": ["Pod 6 Seat 1", "Pod 6 Seat 2", "Pod 6 Seat 3", "Pod 6 Seat 4"]}, {"name": "Pod 7", "kids": ["Pod 7 Seat 1", "Pod 7 Seat 2", "Pod 7 Seat 3", "Pod 7 Seat 4"]}, {"name": "Star Desk", "kids": ["Star Desk Seat 1"]}]}, "2": {"label": "B2 \u00b7 Sedinger", "pods": [{"name": "Pod 1", "kids": ["Pod 1 Seat 1", "Pod 1 Seat 2", "Pod 1 Seat 3", "Pod 1 Seat 4"]}, {"name": "Pod 2", "kids": ["Pod 2 Seat 1", "Pod 2 Seat 2", "Pod 2 Seat 3"]}, {"name": "Pod 3", "kids": ["Pod 3 Seat 1", "Pod 3 Seat 2", "Pod 3 Seat 3", "Pod 3 Seat 4"]}, {"name": "Pod 4", "kids": ["Pod 4 Seat 1", "Pod 4 Seat 2", "Pod 4 Seat 3", "Pod 4 Seat 4"]}, {"name": "Pod 5", "kids": ["Pod 5 Seat 1", "Pod 5 Seat 2", "Pod 5 Seat 3", "Pod 5 Seat 4"]}, {"name": "Pod 6", "kids": ["Pod 6 Seat 1", "Pod 6 Seat 2", "Pod 6 Seat 3", "Pod 6 Seat 4"]}, {"name": "Pod 7", "kids": ["Pod 7 Seat 1", "Pod 7 Seat 2", "Pod 7 Seat 3"]}, {"name": "Pod 8", "kids": ["Pod 8 Seat 1", "Pod 8 Seat 2", "Pod 8 Seat 3"]}]}, "3": {"label": "B3 \u00b7 Nelson", "pods": [{"name": "Pod 1", "kids": ["Pod 1 Seat 1", "Pod 1 Seat 2", "Pod 1 Seat 3", "Pod 1 Seat 4"]}, {"name": "Pod 2", "kids": ["Pod 2 Seat 1", "Pod 2 Seat 2", "Pod 2 Seat 3", "Pod 2 Seat 4"]}, {"name": "Pod 3", "kids": ["Pod 3 Seat 1", "Pod 3 Seat 2", "Pod 3 Seat 3", "Pod 3 Seat 4"]}, {"name": "Pod 4", "kids": ["Pod 4 Seat 1", "Pod 4 Seat 2", "Pod 4 Seat 3", "Pod 4 Seat 4"]}, {"name": "Pod 5", "kids": ["Pod 5 Seat 1", "Pod 5 Seat 2", "Pod 5 Seat 3", "Pod 5 Seat 4"]}, {"name": "Pod 6", "kids": ["Pod 6 Seat 1", "Pod 6 Seat 2", "Pod 6 Seat 3", "Pod 6 Seat 4"]}, {"name": "Pod 7", "kids": ["Pod 7 Seat 1", "Pod 7 Seat 2", "Pod 7 Seat 3", "Pod 7 Seat 4"]}, {"name": "Pod 8", "kids": ["Pod 8 Seat 1", "Pod 8 Seat 2", "Pod 8 Seat 3"]}]}, "4": {"label": "B4 \u00b7 Stonebraker", "pods": [{"name": "Pod 1", "kids": ["Pod 1 Seat 1", "Pod 1 Seat 2", "Pod 1 Seat 3", "Pod 1 Seat 4"]}, {"name": "Pod 2", "kids": ["Pod 2 Seat 1", "Pod 2 Seat 2", "Pod 2 Seat 3", "Pod 2 Seat 4"]}, {"name": "Pod 3", "kids": ["Pod 3 Seat 1", "Pod 3 Seat 2", "Pod 3 Seat 3", "Pod 3 Seat 4"]}, {"name": "Pod 4", "kids": ["Pod 4 Seat 1", "Pod 4 Seat 2", "Pod 4 Seat 3", "Pod 4 Seat 4"]}, {"name": "Pod 5", "kids": ["Pod 5 Seat 1", "Pod 5 Seat 2", "Pod 5 Seat 3", "Pod 5 Seat 4"]}, {"name": "Pod 6", "kids": ["Pod 6 Seat 1", "Pod 6 Seat 2", "Pod 6 Seat 3", "Pod 6 Seat 4"]}, {"name": "Pod 7", "kids": ["Pod 7 Seat 1", "Pod 7 Seat 2", "Pod 7 Seat 3", "Pod 7 Seat 4"]}, {"name": "Pod 8", "kids": ["Pod 8 Seat 1", "Pod 8 Seat 2", "Pod 8 Seat 3", "Pod 8 Seat 4"]}]}};
 const COLORS=["#E3E8FF","#F1E4FF","#DFF6FF","#FFE9F3","#E6FFF4","#FFF6D9","#E8ECF7","#FDE7DA","#EAF7FF","#F3EDFF"];const _old=["#FDE2E4","#E2ECE9","#FFF1D6","#E8DFF5","#DCEEF8","#FFE8D6","#E4F0D9","#F7F2EC","#FFF1D6"];
@@ -54,7 +55,7 @@ if(S.day!==today){S.buf={};S.warn={};S.owed={};S.day=today;save()}
 const key=i=>S.block+":"+i;
 function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),1600)}
 function push(){S.hist.push(JSON.stringify({pts:S.pts,buf:S.buf,warn:S.warn,owed:S.owed,adds:S.adds,takes:S.takes}));if(S.hist.length>60)S.hist.shift()}
-function add(i,r){push();S.pts[key(i)]=(S.pts[key(i)]||0)+1;S.adds++;save();render();toast("+1 "+r)}
+function add(i,r){push();S.pts[key(i)]=(S.pts[key(i)]||0)+1;S.adds++;save();render();toast("+1 "+r);celebrate(i)}
 function undo(){if(!S.hist.length)return toast("Nothing to undo");Object.assign(S,JSON.parse(S.hist.pop()));save();render();toast("↶ Undone")}
 function weekly(){if(!confirm("Start a fresh week? All pod points in ALL blocks go to 0."))return;push();S.pts={};S.buf={};S.warn={};S.owed={};S.adds=0;S.takes=0;save();render();toast("🌅 Fresh start!")}
 function render(){
@@ -76,28 +77,32 @@ function buy(j){const i=+document.getElementById("rp"+j).value,k=key(i),c=S.rewa
 function openTeacher(){const d=document.getElementById("dlg"),B=ROSTER[S.block];const kids=B.pods.flatMap(p=>p.kids);
 
  d.innerHTML=`<h2>🔒 Teacher only</h2><p class="small">Private check-in log. Never changes pod points (Pod Points is points-only) and never shows on the main screen. Use it for a quiet talk with the student, not a public consequence.</p>
-<p><label style="font-size:20px;font-weight:800"><input type="checkbox" id="lockT" ${S.lock?"checked":""} onchange="S.lock=this.checked;save();render()" style="width:28px;height:28px"> 🔒 Lock names (no changes mid-lesson)</label></p><h3>Pod names (teacher edit)</h3>${B.pods.map((p,i)=>`<div class="rw"><span>${p.name}</span><input class="pn" value="${pname(i)}" onchange="S.names=S.names||{};S.names[key(${i})]=this.value;save();render()"></div>`).join("")}<h3>Private check-ins</h3>${kids.map(n=>{const c=S.strikes[S.block+":"+n]||0;return `<div class="rw"><span>${n}</span><span>${"●".repeat(c)||"—"}</span><span><button onclick="st('${n.replace(/'/g,"\\'")}',1)">+ note</button> <button onclick="st('${n.replace(/'/g,"\\'")}',-1)">−</button></span></div>`}).join("")}
+<p><label style="font-size:20px;font-weight:800"><input type="checkbox" id="lockT" ${S.lock?"checked":""} onchange="S.lock=this.checked;save();render()" style="width:28px;height:28px"> 🔒 Lock names &amp; gestures (no changes mid-lesson)</label></p><h3>Pod names (teacher edit)</h3>${B.pods.map((p,i)=>`<div class="rw"><span>${p.name}</span><input class="pn" value="${pname(i)}" onchange="S.names=S.names||{};S.names[key(${i})]=this.value;save();render()"></div>`).join("")}<h3>Private check-ins</h3>${kids.map(n=>{const c=S.strikes[S.block+":"+n]||0;return `<div class="rw"><span>${n}</span><span>${"●".repeat(c)||"—"}</span><span><button onclick="st('${n.replace(/'/g,"\\'")}',1)">+ note</button> <button onclick="st('${n.replace(/'/g,"\\'")}',-1)">−</button></span></div>`}).join("")}
  <p><button onclick="if(confirm('Clear private notes for this block?')){Object.keys(S.strikes).filter(k=>k.startsWith(S.block+':')).forEach(k=>delete S.strikes[k]);save();openTeacher()}">Clear notes</button> <button class="tool" onclick="dlg.close()">Close</button></p>`;if(!d.open)d.showModal()}
 function st(n,v){const k=S.block+":"+n;S.strikes[k]=Math.max(0,(S.strikes[k]||0)+v);save();openTeacher()}
 
+const GESTURES=[["🚀","Rocket launch jump"],["🪐","Orbit spin"],["⭐","Star stretch"],["🌙","Moon wave"],["👊","Pod fist bump"],["🌠","Shooting star swipe"],["✨","Twinkle fingers"],["🙌","Silent cheer"],["🔭","Telescope eyes"],["🖐️","Air high-five"]];
+const gest=i=>(S.gest&&S.gest[key(i)]!=null)?GESTURES[S.gest[key(i)]]:GESTURES[i%GESTURES.length];
+function celebrate(i){const o=document.getElementById("pop"),g=gest(i);o.innerHTML=`<div class="pc"><div style="font-size:120px">${g[0]}</div><div>🎉 ${pname(i)} +1!</div><div style="font-size:30px">Stand up and do your pod gesture!</div><div style="font-size:34px;color:#7B5CFF">${g[1]}</div><div style="font-size:26px;font-style:italic;color:#555">¡Párense y hagan su gesto!</div></div>`;o.classList.add("show");clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove("show"),3000)}
 const SPACE_NAMES=["Moon Crew","Saturn Rings","Comet Chasers","Galaxy Guardians","Rocket Squad","North Stars","Star Gazers","Solar Flares","Orbit Crew","Nebula Ninjas","Astro Aces","Meteor Masters","Cosmic Crew","Lunar Legends","Mars Rovers","Jupiter Giants","Space Rangers","Star Pilots","Rocket Rebels","Galaxy Gliders","Milky Way Team","Black Hole Bunch","Supernovas","Satellite Squad"];
 const EMOJIS=["🌙","🪐","☄️","🌌","🚀","⭐","🔭","☀️","🌍","👽","🛸","🌠","🛰️","👩‍🚀","🌑","💫"];
 const BAD=["stupid","dumb","idiot","hate","kill","sexy","poop","butt","fart","loser","ugly","shut up","damn","hell","crap","suck"];
 let pick={};
 function taken(i){return ROSTER[S.block].pods.map((p,j)=>j==i?null:pname(j).replace(/^\S+\s/,"").toLowerCase())}
-function nameSheet(i){if(S.lock)return toast("🔒 Names are locked right now");
- const cur=pname(i);pick={i,emo:cur.split(" ")[0],nm:cur.replace(/^\S+\s/,"")};drawSheet()}
+function nameSheet(i){if(S.lock)return toast("🔒 Names & gestures are locked right now");
+ const cur=pname(i);pick={i,emo:cur.split(" ")[0],nm:cur.replace(/^\S+\s/,""),g:GESTURES.indexOf(gest(i))};drawSheet()}
 function drawSheet(){const d=document.getElementById("dlg"),tk=taken(pick.i);
  d.innerHTML=`<h2>🚀 Name your pod!</h2><p class="small">Pick a name and an emoji. Names can't repeat in this block.</p>
  <div class="ng">${SPACE_NAMES.map(n=>{const x=tk.includes(n.toLowerCase());return `<button class="${x?'taken':''} ${n==pick.nm?'sel':''}" ${x?'disabled':''} onclick="pick.nm='${n}';drawSheet()">${n}</button>`}).join("")}</div>
  <div class="eg">${EMOJIS.map(e=>`<button class="${e==pick.emo?'sel':''}" onclick="pick.emo='${e}';drawSheet()">${e}</button>`).join(" ")}</div>
- <p>Or make your own: <input id="cn" maxlength="20" placeholder="Max 20 letters"> <button class="tool" onclick="useCustom()">Use it</button></p>
- <p style="font-size:26px;font-weight:900">${pick.emo} ${pick.nm}</p>
+ <h3>Pick your gesture</h3><div class="gg">${GESTURES.map((g,j)=>`<button class="${j==pick.g?'sel':''}" onclick="pick.g=${j};drawSheet()">${g[0]} ${g[1]}</button>`).join("")}</div>
+ <p>Or make your own name: <input id="cn" maxlength="20" placeholder="Max 20 letters"> <button class="tool" onclick="useCustom()">Use it</button></p>
+ <p style="font-size:26px;font-weight:900">${pick.emo} ${pick.nm} · ${GESTURES[pick.g][0]} ${GESTURES[pick.g][1]}</p>
  <button class="tool" onclick="saveName()">✅ Save name</button> <button onclick="dlg.close()">Cancel</button>`;if(!d.open)d.showModal()}
 function useCustom(){const v=document.getElementById("cn").value.trim().replace(/[<>"'`]/g,"").slice(0,20);
  if(!v)return;const low=v.toLowerCase().replace(/[^a-z ]/g,"");if(BAD.some(b=>low.includes(b)))return toast("Let's pick a kind name 🙂");
  if(taken(pick.i).includes(v.toLowerCase()))return toast("Another pod has that name");pick.nm=v;drawSheet()}
 function saveName(){if(taken(pick.i).includes(pick.nm.toLowerCase()))return toast("Another pod has that name");
- S.names=S.names||{};S.names[key(pick.i)]=pick.emo+" "+pick.nm;save();render();dlg.close();toast("🎉 Welcome, "+pick.emo+" "+pick.nm+"!")}
+ S.names=S.names||{};S.names[key(pick.i)]=pick.emo+" "+pick.nm;S.gest=S.gest||{};S.gest[key(pick.i)]=pick.g;save();render();dlg.close();toast("🎉 Welcome, "+pick.emo+" "+pick.nm+"!")}
 render();
 </script></body></html>
