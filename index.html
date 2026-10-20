@@ -31,6 +31,11 @@ input,select{font:inherit;font-size:18px;padding:10px;border-radius:12px;border:
 .small{font-size:14px;opacity:.8}
 .pn-tap{cursor:pointer}.ng{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.ng button{background:#EEF0FF;font-size:16px;min-height:60px}.ng button.taken{opacity:.35}.ng button.sel{background:#7B5CFF;color:#fff}.eg button{background:#F3EDFF;font-size:28px;min-width:56px}.eg button.sel{outline:3px solid #7B5CFF}
 #pop{position:fixed;inset:0;background:#141B3Dcc;display:none;align-items:center;justify-content:center;z-index:50}#pop.show{display:flex}.pc{background:#fff;border-radius:32px;padding:30px 50px;text-align:center;font-size:44px;font-weight:900;border:6px solid #F5B83D;animation:pp .4s}@keyframes pp{from{transform:scale(.5)}to{transform:scale(1)}}.gg button{background:#FFF6D9;font-size:15px;min-height:56px}.gg button.sel{background:#F5B83D}.gg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+*{color:#000!important}
+.tool{background:#DCE3FF!important;border:2px solid #7B5CFF}.blk.on{background:#C9B8FF!important;border:4px solid #000}.blk{border:2px solid #E0C9A8}
+.small{opacity:1!important}.ng button.taken{opacity:1!important;background:#E6E6E6;border:2px dashed #999}
+.ng button.sel{background:#C9B8FF!important}.tag{display:block;font-size:12px;font-weight:900}
+#toast{background:#FFF6D9!important;border:3px solid #F5B83D}
 </style></head><body>
 <header><h1>🚀 Pod Points</h1><span id="blocks"></span>
 <button class="tool" onclick="undo()">↶ Undo</button>
@@ -93,7 +98,7 @@ function nameSheet(i){if(S.lock)return toast("🔒 Names & gestures are locked r
  const cur=pname(i);pick={i,emo:cur.split(" ")[0],nm:cur.replace(/^\S+\s/,""),g:GESTURES.indexOf(gest(i))};drawSheet()}
 function drawSheet(){const d=document.getElementById("dlg"),tk=taken(pick.i);
  d.innerHTML=`<h2>🚀 Name your pod!</h2><p class="small">Pick a name and an emoji. Names can't repeat in this block.</p>
- <div class="ng">${SPACE_NAMES.map(n=>{const x=tk.includes(n.toLowerCase());return `<button class="${x?'taken':''} ${n==pick.nm?'sel':''}" ${x?'disabled':''} onclick="pick.nm='${n}';drawSheet()">${n}</button>`}).join("")}</div>
+ <div class="ng">${SPACE_NAMES.map(n=>{const x=tk.includes(n.toLowerCase());return `<button class="${x?'taken':''} ${n==pick.nm?'sel':''}" ${x?'disabled':''} onclick="pick.nm='${n}';drawSheet()">${n}${x?'<span class=tag>taken</span>':''}</button>`}).join("")}</div>
  <div class="eg">${EMOJIS.map(e=>`<button class="${e==pick.emo?'sel':''}" onclick="pick.emo='${e}';drawSheet()">${e}</button>`).join(" ")}</div>
  <h3>Pick your gesture</h3><div class="gg">${GESTURES.map((g,j)=>`<button class="${j==pick.g?'sel':''}" onclick="pick.g=${j};drawSheet()">${g[0]} ${g[1]}</button>`).join("")}</div>
  <p>Or make your own name: <input id="cn" maxlength="20" placeholder="Max 20 letters"> <button class="tool" onclick="useCustom()">Use it</button></p>
