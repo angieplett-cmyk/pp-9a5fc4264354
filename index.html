@@ -17,12 +17,10 @@ main{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:
 .top{display:flex;justify-content:space-between;align-items:center}
 .pod h2{margin:0;font-size:24px}.pts{font-size:46px;font-weight:900}
 .kids{font-size:17px;margin:4px 0 8px;line-height:1.35}
-.rs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rs button:last-child{grid-column:1/-1}
 .rs button{background:#fff;font-size:17px}
 .rs button:active{transform:scale(.95)}
 .low{display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap}
-.reset{background:#fff3;border:2px dashed #0003;color:var(--ink);font-size:16px}
-.earn{background:var(--gold);color:#fff;font-size:16px}
 .stat{font-size:15px;font-weight:700}
 dialog{border:0;border-radius:24px;max-width:640px;width:92%;padding:22px;font-size:18px}
 dialog::backdrop{background:#0006}
@@ -46,7 +44,7 @@ const COLORS=["#E3E8FF","#F1E4FF","#DFF6FF","#FFE9F3","#E6FFF4","#FFF6D9","#E8EC
 const CUTE=["🌙 Moon Crew","🪐 Saturn Rings","☄️ Comet Chasers","🌌 Galaxy Guardians","🚀 Rocket Squad","⭐ North Stars","🔭 Star Gazers","☀️ Solar Flares","🌍 Orbit Crew","👽 Nebula Ninjas"];
 const pname=i=>(S.names&&S.names[key(i)])||CUTE[i%10];
 const EMO=["🍎","🍁","🎃","🌻","🦉","🍄","🌰","🦊","⭐"];
-const REASONS=["🤝 Teamwork","🎯 On task","💬 Kind words","🧹 Clean pod","🙋 Moving & thinking","🧠 Deep thinking"];
+const REASONS=["🛡️ R · Responsible","💗 E · Empathy","🧘 M · Mindfulness","⭐ I · Integrity","🧠 Deep thinking"];
 const DEF_REWARDS=[["Pod picks music",10],["Sit anywhere 1 day",15],["Teacher's chair 1 period",20],["Pod lunch with Mrs. Plett",30],["Extra recess 5 min",25]];
 let S=JSON.parse(localStorage.getItem("podpoints")||"null")||{block:"1",pts:{},buf:{},warn:{},owed:{},hist:[],strikes:{},rewards:DEF_REWARDS,classGoal:20,day:"",adds:0,takes:0};
 const save=()=>localStorage.setItem("podpoints",JSON.stringify(S));
@@ -56,12 +54,6 @@ const key=i=>S.block+":"+i;
 function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),1600)}
 function push(){S.hist.push(JSON.stringify({pts:S.pts,buf:S.buf,warn:S.warn,owed:S.owed,adds:S.adds,takes:S.takes}));if(S.hist.length>60)S.hist.shift()}
 function add(i,r){push();S.pts[key(i)]=(S.pts[key(i)]||0)+1;S.adds++;save();render();toast("+1 "+r)}
-function reset(i){push();const k=key(i);
- if(!S.warn[k]){S.warn[k]=1;toast("🟡 Gentle reminder, Pod — reset & refocus")}
- else if(!S.buf[k]){S.buf[k]=1;toast("🛡️ Buffer used — no points lost")}
- else{S.pts[k]=Math.max(0,(S.pts[k]||0)-1);S.owed[k]=(S.owed[k]||0)+1;S.warn[k]=0;S.takes++;toast("Pod reset −1 · you can earn it back!")}
- save();render()}
-function earn(i){push();const k=key(i);S.owed[k]--;S.pts[k]=(S.pts[k]||0)+1;save();render();toast("🌟 Earned back!")}
 function undo(){if(!S.hist.length)return toast("Nothing to undo");Object.assign(S,JSON.parse(S.hist.pop()));save();render();toast("↶ Undone")}
 function weekly(){if(!confirm("Start a fresh week? All pod points in ALL blocks go to 0."))return;push();S.pts={};S.buf={};S.warn={};S.owed={};S.adds=0;S.takes=0;save();render();toast("🌅 Fresh start!")}
 function render(){
@@ -72,10 +64,7 @@ function render(){
  document.getElementById("pods").innerHTML=B.pods.map((p,i)=>{const k=key(i);return `<section class="pod" style="background:${COLORS[i%10]}">
  <div class="top"><h2>${pname(i)} <span class="small">· ${p.name}</span></h2><div class="pts">${S.pts[k]||0}</div></div>
  <div class="kids">🪑 ${p.kids.length} seats</div>
- <div class="rs">${REASONS.map(r=>`<button onclick="add(${i},'${r}')">+ ${r}</button>`).join("")}</div>
- <div class="low"><button class="reset" onclick="reset(${i})">↺ Reset</button>
- ${S.owed[k]>0?`<button class="earn" onclick="earn(${i})">🌟 Earned back</button>`:""}
- <span class="stat">${S.warn[k]?"🟡 reminder":""} ${S.buf[k]?"🛡️ buffer used":"🛡️ buffer ready"}</span></div></section>`}).join("");
+ <div class="rs">${REASONS.map(r=>`<button onclick="add(${i},'${r}')">+ ${r}</button>`).join("")}</div></section>`}).join("");
 }
 function openRewards(){const d=document.getElementById("dlg"),B=ROSTER[S.block];
  d.innerHTML=`<h2>🎁 Reward Menu</h2>${S.rewards.map((r,j)=>`<div class="rw"><b>${r[0]}</b><span>${r[1]} pts</span><select id="rp${j}">${B.pods.map((p,i)=>`<option value="${i}">${pname(i)} (${S.pts[key(i)]||0})</option>`).join("")}</select><button class="tool" onclick="buy(${j})">Spend</button><button onclick="S.rewards.splice(${j},1);save();openRewards()">✕</button></div>`).join("")}
@@ -84,9 +73,8 @@ function openRewards(){const d=document.getElementById("dlg"),B=ROSTER[S.block];
  <button class="tool" onclick="dlg.close()">Close</button>`;if(!d.open)d.showModal()}
 function buy(j){const i=+document.getElementById("rp"+j).value,k=key(i),c=S.rewards[j][1];if((S.pts[k]||0)<c)return toast("Not enough points yet — keep going!");push();S.pts[k]-=c;save();render();openRewards();toast("🎉 "+pname(i)+": "+S.rewards[j][0])}
 function openTeacher(){const d=document.getElementById("dlg"),B=ROSTER[S.block];const kids=B.pods.flatMap(p=>p.kids);
- const ratio=S.takes?(S.adds/S.takes).toFixed(1)+" : 1":"all positive 🎉";
- d.innerHTML=`<h2>🔒 Teacher only</h2><p class="small">Private check-in log. Never changes pod points and never shows on the main screen. Use it for a quiet talk with the student, not a public consequence.</p>
- <p><b>Positive : takeaway ratio this week:</b> ${ratio} <span class="small">(aim for 4:1 or more)</span></p>
+
+ d.innerHTML=`<h2>🔒 Teacher only</h2><p class="small">Private check-in log. Never changes pod points (Pod Points is points-only) and never shows on the main screen. Use it for a quiet talk with the student, not a public consequence.</p>
 <h3>Pod names</h3>${B.pods.map((p,i)=>`<div class="rw"><span>${p.name}</span><input class="pn" value="${pname(i)}" onchange="S.names=S.names||{};S.names[key(${i})]=this.value;save();render()"></div>`).join("")}<h3>Private check-ins</h3>${kids.map(n=>{const c=S.strikes[S.block+":"+n]||0;return `<div class="rw"><span>${n}</span><span>${"●".repeat(c)||"—"}</span><span><button onclick="st('${n.replace(/'/g,"\\'")}',1)">+ note</button> <button onclick="st('${n.replace(/'/g,"\\'")}',-1)">−</button></span></div>`}).join("")}
  <p><button onclick="if(confirm('Clear private notes for this block?')){Object.keys(S.strikes).filter(k=>k.startsWith(S.block+':')).forEach(k=>delete S.strikes[k]);save();openTeacher()}">Clear notes</button> <button class="tool" onclick="dlg.close()">Close</button></p>`;if(!d.open)d.showModal()}
 function st(n,v){const k=S.block+":"+n;S.strikes[k]=Math.max(0,(S.strikes[k]||0)+v);save();openTeacher()}
